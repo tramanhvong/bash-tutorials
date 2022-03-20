@@ -1,0 +1,53 @@
+---
+- name: setup lab
+  hosts: all
+  remote_user: root
+  become: true
+  
+  tasks:
+  - name: Add the user 'student' with a specific uid and a primary group of 'student'
+    ansible.builtin.user:
+      name: "{{ item }}"
+      password: "{{ item | password_hash('sha512') }}"
+    with_items:
+      - student
+      - admin
+
+  - name: Insert/Update "Match User" configuration block in /etc/ssh/sshd_config
+    blockinfile:
+      path: /etc/ssh/sshd_config
+      block: |
+        Match User student
+        PasswordAuthentication yes
+        Match all
+
+        Match User admin
+        PasswordAuthentication yes
+        Match all
+
+  - name: Restart sshd
+    shell: service sshd restart
+  
+
+  - name: Set timezone to America/New_York
+    community.general.timezone:
+      name: America/New_York
+
+  - name: Add line
+    copy: 
+      src: admin.sudo
+      dest: /etc/sudoers.d/admin
+
+  - name: Add swap file
+    shell: sudo dd if=/dev/zero of=/swapfile count=4096 bs=1MiB
+  - name: change permission
+    shell: chmod 600 /swapfile ; mkswap /swapfile;  swapon /swapfile
+
+  - name: Ensure fstab uses nodev
+    mount:
+      name: swapfile
+      src: /swapfile
+      fstype: swap
+      opts: sw
+      state: present
+    

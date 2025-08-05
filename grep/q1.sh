@@ -4,7 +4,7 @@
 echo -n "Please enter the user name"
 read user
 # execing the command
-grep $user /etc/passwd
+grep $user /etc/passwd # search for variable user in file /etc/passwd
 # checking output of the command
 if [ $? -eq 0 ]; then
     echo "User Found"

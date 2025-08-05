@@ -1,10 +1,10 @@
 #!/bin/bash
 freespace=$(df -h / | grep -E "\/$" | awk '{print $4}')
-greentext="\033[32m"
-bold="\033[1m"
-normal="\033[0m"
-logdate=$(date -I)
-logfile=_report_"$logdate".log
+greentext="\033[32m" # sets ANSI escape code
+bold="\033[1m" # sets ANSI escape code
+normal="\033[0m" # sets ANSI escape code
+logdate=$(date -I) # set current date in ISO format
+logfile=_report_"$logdate".log # set log file using the date
 
 echo -e $bold"Quick system report for "$greentext"$HOSTNAME"$normal
 printf "\tSystem type:\t%s\n" $MACHTYPE
